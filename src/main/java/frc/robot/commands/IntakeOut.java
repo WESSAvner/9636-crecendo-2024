@@ -5,7 +5,7 @@ import frc.robot.subsystems.Intake;
 
 
 public class IntakeOut extends Command {
-    public static Intake m_intakeOut;
+    public final Intake m_intakeOut;
 
     public IntakeOut(Intake intakeCommand) {
 
@@ -13,25 +13,25 @@ public class IntakeOut extends Command {
 
     }
 
-   // @Override
+   @Override
     public void initialize() {
 
-        m_intakeOut.m_robotIntake(-0.5);
+        m_intakeOut.m_robotIntakeOut(1);
     }
 
-    //@Override
+    @Override
     public void execute() {
 
 
     }
 
-    //@Override
+    @Override
     public boolean isFinished() {
       
       return false;
     }
   
-    //@Override
+    @Override
     public void end(boolean interrupted) {
       m_intakeOut.m_robotIntakeStop();
     }

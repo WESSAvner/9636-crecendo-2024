@@ -16,10 +16,12 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.autons.MobilityAuton;
+// import frc.robot.commands.ArmAngle;
 import frc.robot.commands.IntakeIn;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
@@ -50,6 +52,7 @@ public class RobotContainer {
   // The robot's subsystems
   public static final DriveSubsystem m_robotDrive = new DriveSubsystem();
   public static final Arm m_arm = new Arm();
+  public static final Intake m_intake = new Intake();
 
   // The driver's controller
   PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
@@ -73,8 +76,10 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
+                true, false),
             m_robotDrive));
+         System.out.println(m_driverController.getRightX());
+    
   }
 
   /**
@@ -94,25 +99,48 @@ public class RobotContainer {
 
     m_operatorController
         .L1()
-            .whileTrue((Command) new IntakeIn(IntakeIn.m_intakeIn));
+            .whileTrue(new IntakeIn(m_intake));
             
     m_operatorController
         .R1()
-            .whileTrue((Command) new IntakeOut(IntakeOut.m_intakeOut))
-
-        ;
+            .whileTrue(new IntakeOut(m_intake));
 
      m_operatorController
         .L2()
             .onTrue(
-                m_arm.setArmAngleCmd(0)
+                new RunCommand(
+                    () -> m_arm.setArmSpeed(.3),
+                    m_arm
+                ) 
+            );
+
+    m_operatorController
+        .L2()
+            .onFalse(
+                new RunCommand(
+                    () -> m_arm.setArmSpeed(0),
+                    m_arm
+                ) 
             );
 
     m_operatorController
         .R2()
             .onTrue(
-                m_arm.setArmAngleCmd(90)
+                new RunCommand(
+                    () -> m_arm.setArmSpeed(-.3),
+                    m_arm
+                ) 
             );
+
+    m_operatorController
+        .R2()
+            .onFalse(
+                new RunCommand(
+                    () -> m_arm.setArmSpeed(-.5),
+                    m_arm
+                ) 
+            );
+    
   }
     
 
