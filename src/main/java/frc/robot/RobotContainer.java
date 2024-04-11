@@ -5,20 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.autons.MobilityAuton;
 // import frc.robot.commands.ArmAngle;
@@ -27,18 +16,9 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import java.util.List;
-import edu.wpi.first.wpilibj2.command.Command;
-
 import frc.robot.subsystems.Intake;
-import frc.robot.commands.IntakeIn;
 import frc.robot.commands.IntakeOut;
 
 
@@ -136,7 +116,7 @@ public class RobotContainer {
         .R2()
             .onFalse(
                 new RunCommand(
-                    () -> m_arm.setArmSpeed(-.5),
+                    () -> m_arm.setArmSpeed(0),
                     m_arm
                 ) 
             );
@@ -189,6 +169,6 @@ public class RobotContainer {
 //     // Run path following command, then stop at the end.
 //     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
 //   }
-    return new MobilityAuton();
+    return new MobilityAuton(m_robotDrive);
   }
 }

@@ -18,16 +18,16 @@ public class ClimbToggle extends Command {
     }
 
 
-    //@Override
-    public void initialize2() {
+    @Override
+    public void initialize() {
 
 
         m_ClimbToggle.m_robotClimber();
     }
 
 
-    //@Override
-    public void execute2() {
+    @Override
+    public void execute() {
 
 
 
@@ -35,14 +35,14 @@ public class ClimbToggle extends Command {
     }
 
 
-    //@Override
-    public boolean isFinished2() {
+    @Override
+    public boolean isFinished() {
      
       return false;
     }
  
-    //@Override
-    public void end2(boolean interrupted) {
+    @Override
+    public void end(boolean interrupted) {
    
     }
   }

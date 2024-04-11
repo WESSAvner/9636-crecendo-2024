@@ -8,13 +8,15 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class MobilityAuton extends SequentialCommandGroup {
-    private DriveSubsystem drivetrain;
-    public MobilityAuton() {
-        drivetrain = RobotContainer.m_robotDrive;
+    public MobilityAuton(DriveSubsystem drivetrain) {
+        
         addCommands(
             new WaitCommand(2),
             new InstantCommand(() -> drivetrain.drive(1, 0, 0, true, true))
                 .withTimeout(5)
         );
     }
+
+
+
 }
