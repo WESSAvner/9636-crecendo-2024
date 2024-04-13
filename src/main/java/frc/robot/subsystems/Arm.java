@@ -41,7 +41,7 @@ public class Arm extends SubsystemBase{
         m_armMotorRight.set(speed);
     }
 
-    @Override
+    
     public void periodic() {
         m_armMotorRight.setVoltage(PIDController.calculate(angEncoder.getPosition(), armAngle));
     }
