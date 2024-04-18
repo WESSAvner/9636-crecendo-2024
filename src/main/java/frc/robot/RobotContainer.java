@@ -6,6 +6,9 @@ package frc.robot;
 
 import java.io.File;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Compressor;
@@ -16,6 +19,8 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmDown;
+import frc.robot.commands.ArmUp;
 import frc.robot.commands.ClimbToggle;
 import frc.robot.commands.DriveCommand;
 // import frc.robot.commands.ArmAngle;
@@ -30,6 +35,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.subsystems.Intake;
 import frc.robot.commands.IntakeOut;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /*
@@ -45,6 +52,8 @@ public class RobotContainer {
   public static final Intake m_intake = new Intake();
   public static final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
   public static final Climber m_climber = new Climber(new Solenoid(PneumaticsModuleType.REVPH, 15));
+  
+  public final SendableChooser<Command> autoChooser;
 
   // The driver's controller
   private final PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
@@ -57,6 +66,14 @@ public class RobotContainer {
    */
   public RobotContainer()
   {
+        // Build an auto chooser. This will use Commands.none() as the default option.
+    autoChooser = AutoBuilder.buildAutoChooser("Mobility");
+
+    // Another option that allows you to specify the default auto by its name
+    // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+   
     // Configure the trigger bindings
     configureBindings();
 
@@ -117,46 +134,23 @@ public class RobotContainer {
 
      m_operatorController
         .L2()
-            .onTrue(
-                new RunCommand(
-                    () -> m_arm.setArmSpeed(.3),
-                    m_arm
-                ) 
-            );
-
-    m_operatorController
-        .L2()
-            .onFalse(
-                new RunCommand(
-                    () -> m_arm.setArmSpeed(0),
-                    m_arm
-                ) 
-            );
+            .onTrue(new ArmUp(m_arm));
 
     m_operatorController
         .R2()
-            .onTrue(
-                new RunCommand(
-                    () -> m_arm.setArmSpeed(-.3),
-                    m_arm
-                ) 
-            );
-
-    m_operatorController
-        .R2()
-            .onFalse(
-                new RunCommand(
-                    () -> m_arm.setArmSpeed(0),
-                    m_arm
-                ) 
-            );
-    
+            .onTrue(new ArmDown(m_arm));
+   
     m_operatorController
         .cross()
             .onTrue(
                 new ClimbToggle(m_climber)
             );
-    
+
+    // register named commands to PathPlanner
+    NamedCommands.registerCommand("IntakeIn", new IntakeIn(m_intake));
+    NamedCommands.registerCommand("IntakeOut", new IntakeOut(m_intake));
+    NamedCommands.registerCommand("ArmUp", new ArmUp(m_arm));
+    NamedCommands.registerCommand("ArmDown", new ArmDown(m_arm));
   }
     
 
@@ -204,7 +198,9 @@ public class RobotContainer {
 
 //     // Run path following command, then stop at the end.
 //     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-//   }
-    return m_robotDrive.getAutonomousCommand("Test");
+//   }  
+    return autoChooser.getSelected();
   }
+
+  
 }
