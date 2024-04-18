@@ -47,7 +47,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class RobotContainer {
   // The robot's subsystems
-  public static final SwerveSubsystem m_robotDrive = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
+  public static final SwerveSubsystem m_robotDrive = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve"));
   public static final Arm m_arm = new Arm();
   public static final Intake m_intake = new Intake();
   public static final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
@@ -106,8 +106,13 @@ public class RobotContainer {
         () -> m_driverController.getRawAxis(2));
 
     m_robotDrive.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
-  }
+        //new DriveCommand(m_robotDrive, 
+        //() -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        //() -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        //() -> MathUtil.applyDeadband(m_driverController.getRightX(), OperatorConstants.LEFT_X_DEADBAND))
+        !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim
+    );
+}
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
