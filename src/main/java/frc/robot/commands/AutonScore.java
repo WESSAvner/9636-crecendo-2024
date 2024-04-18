@@ -1,22 +1,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
 
 
-public class ArmDown extends Command {
-    public final Arm m_arm;
+public class AutonScore extends Command {
+    public final Intake m_intakeIn;
 
-    public ArmDown(Arm robotArm) {
+    public AutonScore(Intake intakeCommand) {
 
-        m_arm = robotArm;
+        m_intakeIn = intakeCommand;
 
     }
 
     @Override
     public void initialize() {
 
-        m_arm.setArmAngle(110);
+        m_intakeIn.m_robotIntake(1);
     }
 
     @Override
@@ -28,11 +28,10 @@ public class ArmDown extends Command {
     @Override
     public boolean isFinished() {
       
-      return m_arm.isAtTraget();
+      return false;
     }
   
     @Override
     public void end(boolean interrupted) {
-  
     }
 }

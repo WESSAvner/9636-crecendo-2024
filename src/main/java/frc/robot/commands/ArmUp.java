@@ -16,12 +16,11 @@ public class ArmUp extends Command {
     @Override
     public void initialize() {
 
-        m_arm.setArmAngle(.25);
+        m_arm.setArmAngle(212);
     }
 
     @Override
     public void execute() {
-        m_arm.periodic();
 
     }
 

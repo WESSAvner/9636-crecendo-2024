@@ -1,38 +1,47 @@
 package frc.robot.commands;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.SwerveSubsystem;
 
 
-public class ArmDown extends Command {
-    public final Arm m_arm;
+public class ZeroGyro extends Command {
+    public static SwerveSubsystem m_swerveDrive;
 
-    public ArmDown(Arm robotArm) {
 
-        m_arm = robotArm;
+    public ZeroGyro(SwerveSubsystem swerveSubsystem) {
+
+
+        m_swerveDrive = swerveSubsystem;
+
 
     }
+
 
     @Override
     public void initialize() {
 
-        m_arm.setArmAngle(110);
+
+        m_swerveDrive.zeroGyro();
     }
+
 
     @Override
     public void execute() {
 
 
+
+
     }
+
 
     @Override
     public boolean isFinished() {
-      
-      return m_arm.isAtTraget();
+     
+      return true;
     }
-  
+ 
     @Override
     public void end(boolean interrupted) {
-  
     }
-}
+  }

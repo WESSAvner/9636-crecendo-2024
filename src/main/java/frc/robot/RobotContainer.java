@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmDown;
 import frc.robot.commands.ArmUp;
+import frc.robot.commands.AutonScore;
 import frc.robot.commands.ClimbToggle;
 import frc.robot.commands.DriveCommand;
 // import frc.robot.commands.ArmAngle;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import frc.robot.subsystems.Intake;
 import frc.robot.commands.IntakeOut;
+import frc.robot.commands.ZeroGyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -50,13 +52,12 @@ public class RobotContainer {
   public static final SwerveSubsystem m_robotDrive = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve"));
   public static final Arm m_arm = new Arm();
   public static final Intake m_intake = new Intake();
-  public static final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
-  public static final Climber m_climber = new Climber(new Solenoid(PneumaticsModuleType.REVPH, 15));
-  
+  public static final Compressor m_compressor = new Compressor(15, PneumaticsModuleType.REVPH);
+  public static final Climber m_climber = new Climber(new Solenoid(15, PneumaticsModuleType.REVPH, 8));
   public final SendableChooser<Command> autoChooser;
 
   // The driver's controller
-  private final PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
+  private final CommandPS4Controller m_driverController = new CommandPS4Controller(OIConstants.kDriverControllerPort);
 
   // The operator's controller
   private final CommandPS4Controller m_operatorController = new CommandPS4Controller(OIConstants.kOperatorControllerPort);
@@ -66,7 +67,11 @@ public class RobotContainer {
    */
   public RobotContainer()
   {
-        // Build an auto chooser. This will use Commands.none() as the default option.
+    NamedCommands.registerCommand("ArmUp", new ArmUp(m_arm));
+    NamedCommands.registerCommand("ArmDown", new ArmDown(m_arm));
+    NamedCommands.registerCommand("AutonScore", new AutonScore(m_intake));
+    
+    // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser("Mobility");
 
     // Another option that allows you to specify the default auto by its name
@@ -77,7 +82,9 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    m_compressor.enableDigital();
+    m_robotDrive.zeroGyro();
+
+    m_compressor.enableAnalog(60, 120);
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -98,7 +105,7 @@ public class RobotContainer {
     Command driveFieldOrientedAnglularVelocity = m_robotDrive.driveCommand(
         () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> m_driverController.getRightX() * 0.5);
+        () -> m_driverController.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = m_robotDrive.simDriveCommand(
         () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
@@ -129,6 +136,10 @@ public class RobotContainer {
     //        () -> m_robotDrive.setX(),
     //        m_robotDrive));
 
+    m_driverController
+        .cross()
+            .onTrue(new ZeroGyro(m_robotDrive));
+
     m_operatorController
         .L1()
             .whileTrue(new IntakeIn(m_intake));
@@ -137,7 +148,7 @@ public class RobotContainer {
         .R1()
             .whileTrue(new IntakeOut(m_intake));
 
-     m_operatorController
+    m_operatorController
         .L2()
             .onTrue(new ArmUp(m_arm));
 
@@ -152,10 +163,8 @@ public class RobotContainer {
             );
 
     // register named commands to PathPlanner
-    NamedCommands.registerCommand("IntakeIn", new IntakeIn(m_intake));
-    NamedCommands.registerCommand("IntakeOut", new IntakeOut(m_intake));
-    NamedCommands.registerCommand("ArmUp", new ArmUp(m_arm));
-    NamedCommands.registerCommand("ArmDown", new ArmDown(m_arm));
+    //NamedCommands.registerCommand("IntakeIn", new IntakeIn(m_intake));
+    //NamedCommands.registerCommand("IntakeOut", new IntakeOut(m_intake));
   }
     
 
