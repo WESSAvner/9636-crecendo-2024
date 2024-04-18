@@ -62,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase
     //  In this case the wheel diameter is 4 inches, which must be converted to meters to get meters/second.
     //  The gear ratio is 6.75 motor revolutions per wheel rotation.
     //  The encoder resolution per motor revolution is 1 per motor revolution.
-    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.75);
+    double driveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(3),4.71);
     System.out.println("\"conversionFactor\": {");
     System.out.println("\t\"angle\": " + angleConversionFactor + ",");
     System.out.println("\t\"drive\": " + driveConversionFactor);
@@ -95,73 +95,73 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive = new SwerveDrive(driveCfg, controllerCfg, maximumSpeed);
   }
 
-  // /**
-  //  * Setup AutoBuilder for PathPlanner.
-  //  */
-  // public void setupPathPlanner()
-  // {
-  //   AutoBuilder.configureHolonomic(
-  //       this::getPose, // Robot pose supplier
-  //       this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-  //       this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-  //       this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-  //       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-  //                                        AutonConstants.TRANSLATION_PID,
-  //                                        // Translation PID constants
-  //                                        AutonConstants.ANGLE_PID,
-  //                                        // Rotation PID constants
-  //                                        4.5,
-  //                                        // Max module speed, in m/s
-  //                                        swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
-  //                                        // Drive base radius in meters. Distance from robot center to furthest module.
-  //                                        new ReplanningConfig()
-  //                                        // Default path replanning config. See the API for the options here
-  //       ),
-  //       () -> {
-  //         // Boolean supplier that controls when the path will be mirrored for the red alliance
-  //         // This will flip the path being followed to the red side of the field.
-  //         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-  //         var alliance = DriverStation.getAlliance();
-  //         return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-  //       },
-  //       this // Reference to this subsystem to set requirements
-  //                                 );
-  // }
+  /**
+   * Setup AutoBuilder for PathPlanner.
+   */
+  public void setupPathPlanner()
+  {
+    AutoBuilder.configureHolonomic(
+        this::getPose, // Robot pose supplier
+        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                                         AutonConstants.TRANSLATION_PID,
+                                         // Translation PID constants
+                                         AutonConstants.ANGLE_PID,
+                                         // Rotation PID constants
+                                         4.5,
+                                         // Max module speed, in m/s
+                                         swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
+                                         // Drive base radius in meters. Distance from robot center to furthest module.
+                                         new ReplanningConfig()
+                                         // Default path replanning config. See the API for the options here
+        ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+          var alliance = DriverStation.getAlliance();
+          return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
+        },
+        this // Reference to this subsystem to set requirements
+                                  );
+  }
 
 
-  // /**
-  //  * Get the path follower with events.
-  //  *
-  //  * @param pathName       PathPlanner path name.
-  //  * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
-  //  */
-  // public Command getAutonomousCommand(String pathName)
-  // {
-  //   // Create a path following command using AutoBuilder. This will also trigger event markers.
-  //   return new PathPlannerAuto(pathName);
-  // }
+/**
+ * Get the path follower with events.
+ *
+ * @param pathName       PathPlanner path name.
+ * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
+ */
+public Command getAutonomousCommand(String pathName)
+{
+  // Create a path following command using AutoBuilder. This will also trigger event markers.
+  return new PathPlannerAuto(pathName);
+}
 
-//   /**
-//    * Use PathPlanner Path finding to go to a point on the field.
-//    *
-//    * @param pose Target {@link Pose2d} to go to.
-//    * @return PathFinding command
-//    */
-//   public Command driveToPose(Pose2d pose)
-//   {
-// // Create the constraints to use while pathfinding
-//     PathConstraints constraints = new PathConstraints(
-//         swerveDrive.getMaximumVelocity(), 4.0,
-//         swerveDrive.getMaximumAngularVelocity(), Units.degreesToRadians(720));
+  /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to.
+   * @return PathFinding command
+   */
+  public Command driveToPose(Pose2d pose)
+  {
+// Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumVelocity(), 4.0,
+        swerveDrive.getMaximumAngularVelocity(), Units.degreesToRadians(720));
 
-// // Since AutoBuilder is configured, we can use it to build pathfinding commands
-//     return AutoBuilder.pathfindToPose(
-//         pose,
-//         constraints,
-//         0.0, // Goal end velocity in meters/sec
-//         0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
-//                                      );
-//   }
+// Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints,
+        0.0, // Goal end velocity in meters/sec
+        0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+                                     );
+  }
 
   /**
    * Command to drive the robot using translative values and heading as a setpoint.

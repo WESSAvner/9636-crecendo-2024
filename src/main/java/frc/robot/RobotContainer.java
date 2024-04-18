@@ -8,17 +8,21 @@ import java.io.File;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.Constants.OIConstants;
+import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.autons.MobilityAuton;
+import frc.robot.commands.ClimbToggle;
 import frc.robot.commands.DriveCommand;
 // import frc.robot.commands.ArmAngle;
+import frc.robot.Constants.OIConstants;
 import frc.robot.commands.IntakeIn;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -39,6 +43,8 @@ public class RobotContainer {
   public static final SwerveSubsystem m_robotDrive = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
   public static final Arm m_arm = new Arm();
   public static final Intake m_intake = new Intake();
+  public static final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+  public static final Climber m_climber = new Climber(new Solenoid(PneumaticsModuleType.REVPH, 15));
 
   // The driver's controller
   private final PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
@@ -54,17 +60,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    DriveCommand closedAbsoluteDriveAdv = new DriveCommand(m_robotDrive,
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                OperatorConstants.LEFT_X_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                   m_driverController.getHID()::getYButtonPressed,
-                                                                   m_driverController.getHID()::getAButtonPressed,
-                                                                   m_driverController.getHID()::getXButtonPressed,
-                                                                   m_driverController.getHID()::getBButtonPressed);
+    m_compressor.enableDigital();
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -105,11 +101,11 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
-  private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+  private void configureBindings() {
+    //new JoystickButton(m_driverController, Button.kR1.value)
+    //    .whileTrue(new RunCommand(
+    //        () -> m_robotDrive.setX(),
+    //        m_robotDrive));
 
     m_operatorController
         .L1()
@@ -153,6 +149,12 @@ public class RobotContainer {
                     () -> m_arm.setArmSpeed(0),
                     m_arm
                 ) 
+            );
+    
+    m_operatorController
+        .cross()
+            .onTrue(
+                new ClimbToggle(m_climber)
             );
     
   }
@@ -203,6 +205,6 @@ public class RobotContainer {
 //     // Run path following command, then stop at the end.
 //     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
 //   }
-    return new MobilityAuton(m_robotDrive);
+    return m_robotDrive.getAutonomousCommand("Test");
   }
 }

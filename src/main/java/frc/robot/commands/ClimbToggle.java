@@ -22,7 +22,7 @@ public class ClimbToggle extends Command {
     public void initialize() {
 
 
-        m_ClimbToggle.m_robotClimber();
+        m_ClimbToggle.raiseClimber();
     }
 
 
@@ -43,6 +43,6 @@ public class ClimbToggle extends Command {
  
     @Override
     public void end(boolean interrupted) {
-   
+      m_ClimbToggle.lowerClimber();
     }
   }
