@@ -52,7 +52,7 @@ public class RobotContainer {
   public static final SwerveSubsystem m_robotDrive = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve"));
   public static final Arm m_arm = new Arm();
   public static final Intake m_intake = new Intake();
-  public static final Compressor m_compressor = new Compressor(15, PneumaticsModuleType.REVPH);
+  //public static final Compressor m_compressor = new Compressor(15, PneumaticsModuleType.REVPH);
   public static final Climber m_climber = new Climber(new Solenoid(15, PneumaticsModuleType.REVPH, 8));
   public final SendableChooser<Command> autoChooser;
 
@@ -70,6 +70,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("ArmUp", new ArmUp(m_arm));
     NamedCommands.registerCommand("ArmDown", new ArmDown(m_arm));
     NamedCommands.registerCommand("AutonScore", new AutonScore(m_intake));
+    NamedCommands.registerCommand("IntakeIn", new IntakeIn(m_intake));
     
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser("Mobility");
@@ -84,7 +85,7 @@ public class RobotContainer {
 
     m_robotDrive.zeroGyro();
 
-    m_compressor.enableAnalog(60, 120);
+    //m_compressor.enableAnalog(60, 120);
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot

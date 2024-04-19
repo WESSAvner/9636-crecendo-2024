@@ -42,6 +42,18 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeIn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Arm Down"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp to Mobility"
